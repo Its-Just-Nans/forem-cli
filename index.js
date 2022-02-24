@@ -1,7 +1,7 @@
-import ForemClient from "./forem.js";
+import ForemClient from "../forem-client/index.js";
 import axios from 'axios';
 import { quest, formatQuestion, getArticles, sendArticles } from './utils.js';
-
+import process from 'node:process';
 import apikey from "./apikey.js";
 
 let client = new ForemClient(axios);
@@ -17,9 +17,6 @@ const start = async () => {
     while ((answer = await quest(defQuestion)) !== "1") {
         switch (answer) {
             case (ans.indexOf("getArticles") + 1).toString(): {
-                if (typeof USERNAME !== "undefined") {
-                    USERNAME = await quest('Enter the name :');
-                }
                 await getArticles(client, USERNAME);
                 break;
             }
@@ -31,10 +28,6 @@ const start = async () => {
     }
 }
 
-const job = async () => {
-    let res;
-    await start();
-
-    res;
-};
-job();
+start().catch(() => {
+    console.log("Exited\n")
+})
