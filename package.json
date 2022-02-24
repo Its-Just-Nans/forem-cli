@@ -1,0 +1,20 @@
+{
+  "name": "toto",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "n4n5",
+  "license": "MIT",
+  "type": "module",
+  "dependencies": {
+    "axios": "^0.26.0",
+    "body-parser": "^1.19.2",
+    "polka": "^0.5.2",
+    "showdown": "^2.0.0",
+    "showdown-highlight": "^2.1.8",
+    "showdown-katex": "^0.8.0"
+  }
+}
