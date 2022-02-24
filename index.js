@@ -1,33 +1,42 @@
 import ForemClient from "../forem-client/index.js";
 import axios from 'axios';
-import { quest, formatQuestion, getArticles, sendArticles } from './utils.js';
-import process from 'node:process';
-import apikey from "./apikey.js";
+import { quest, questSafe, formatQuestion, getArticles, sendArticles } from './utils.js';
 
 let client = new ForemClient(axios);
-client.setAPIkey(apikey);
-
-let APIKEY = null;
-let USERNAME = null;
 
 const start = async () => {
-    const ans = ["exit", "getArticles", "sendArticles"];
+    const ans = ["exit", "set user", "getArticles", "sendArticles", "set api-key"];
     const defQuestion = formatQuestion('-----------\nWhat do you want to do ?', ans);
     let answer = null;
     while ((answer = await quest(defQuestion)) !== "1") {
         switch (answer) {
+            case (ans.indexOf("set user") + 1).toString(): {
+                const username = await questSafe("Enter the username\n");
+                if (username === "0") { continue };
+                const clientObj = await client.GET_getUserByUsername(username).catch(() => { console.log("--> user not found ! :(") })
+                if (typeof clientObj !== "undefined") {
+                    client.setUser(clientObj);
+                }
+                break;
+            }
             case (ans.indexOf("getArticles") + 1).toString(): {
-                await getArticles(client, USERNAME);
+                await getArticles(client);
                 break;
             }
             case (ans.indexOf("sendArticles") + 1).toString(): {
                 await sendArticles(client);
                 break;
             }
+            case (ans.indexOf("set api-key") + 1).toString(): {
+                const apikey = await questSafe("Enter the api-key\n");
+                if (apikey === "0") { continue };
+                client.setAPIkey(apikey);
+                break;
+            }
         }
     }
 }
 
-start().catch(() => {
-    console.log("Exited\n")
+start().catch((e) => {
+    console.log("Exited")
 })

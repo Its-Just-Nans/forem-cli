@@ -15,8 +15,8 @@ export const quest = (question, count = 1) => {
                 rl.close();
                 reject("");
             } else {
-                console.log("->One more time to leave");
-                console.log(question);
+                console.log("-->One more time to leave");
+                //console.log(question);
                 count--;
             }
         };
@@ -28,7 +28,7 @@ export const quest = (question, count = 1) => {
     });
 }
 
-const questSafe = async (question, count = 0) => {
+export const questSafe = async (question, count = 0) => {
     let resTemp = "";
     resTemp = await quest(question, count).catch(() => { });
     return typeof resTemp !== "undefined" ? resTemp : "0";
@@ -44,14 +44,15 @@ export const formatQuestion = (ques, arrayAns) => {
     return `${final}\n`;
 };
 
-export const getArticles = async (client, USERNAME) => {
-    if (typeof USERNAME !== "undefined") {
-        USERNAME = await questSafe('Enter the name :');
+export const getArticles = async (client) => {
+    let username = client.getUser().username;
+    if (typeof username === "undefined") {
+        username = await questSafe('Enter the name :');
     }
-    if (USERNAME == "0") {
+    if (username == "0" || typeof username === "undefined") {
         return;
     }
-    let res = await client.GET_articles({ username: USERNAME });
+    let res = await client.GET_articles({ username });
     if (res && res.length > 0) {
         res.forEach(element => {
             console.log(JSON.stringify(element, null, 4));
