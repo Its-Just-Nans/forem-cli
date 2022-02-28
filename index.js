@@ -1,4 +1,4 @@
-import ForemClient from "../forem-client/index.js";
+import ForemClient from "forem-client";
 import axios from 'axios';
 import { quest, questSafe, formatQuestion, getArticles, sendArticles } from './utils.js';
 
