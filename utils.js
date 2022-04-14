@@ -1,7 +1,35 @@
 import * as readline from 'node:readline';
 import { stdin as input, stdout as output } from 'node:process';
 import fs from "node:fs";
+import { homedir } from "node:os"
+import { join } from "node:path"
 
+const CONFIG_FILENAME = ".forem-client-config";
+
+export const getConfig = () => {
+    const pathToHomedir = homedir();
+    const pathToFileConfig = join(pathToHomedir, CONFIG_FILENAME);
+    if (fs.existsSync(pathToFileConfig)) {
+        try {
+            let fileInString = fs.readFileSync(pathToFileConfig).toString();
+            return JSON.parse(fileInString);
+        } catch (e) {
+            return {};
+        }
+    }
+    return {};
+}
+
+export const saveConfig = (config) => {
+    const pathToHomedir = homedir();
+    const pathToFileConfig = join(pathToHomedir, CONFIG_FILENAME);
+    try {
+        fs.writeFileSync(pathToFileConfig, JSON.stringify(config));
+        console.log("--> Config saved")
+    } catch (e) {
+        console.log("--> Config save failed :(")
+    }
+}
 
 export const quest = (question, count = 1) => {
     return new Promise((resolve, reject) => {
