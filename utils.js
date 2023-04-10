@@ -6,8 +6,7 @@ import { join } from "node:path";
 
 const CONFIG_FILENAME = ".forem-client-config";
 
-const sleep = async(time) =>
-    new Promise((res, rej) => setTimeout(res, time * 1000));
+const sleep = async (time) => new Promise((res, rej) => setTimeout(res, time * 1000));
 
 export const getConfig = () => {
     const pathToHomedir = homedir();
@@ -34,6 +33,19 @@ export const saveConfig = (config) => {
     }
 };
 
+export const showConfig = (config) => {
+    const pathToHomedir = homedir();
+    const pathToFileConfig = join(pathToHomedir, CONFIG_FILENAME);
+    try {
+        const file = fs.readFileSync(pathToFileConfig).toString();
+        const parsed = JSON.parse(file);
+        const str = JSON.stringify(parsed, null, 4);
+        console.log(str);
+    } catch (e) {
+        console.log("--> Config save failed :(");
+    }
+};
+
 export const quest = (question, count = 1) => {
     return new Promise((resolve, reject) => {
         const rl = readline.createInterface({
@@ -44,7 +56,7 @@ export const quest = (question, count = 1) => {
             if (count == 0) {
                 rl.removeListener("SIGINT", callback);
                 rl.close();
-                reject("");
+                reject(new Error("LEAVED"));
             } else {
                 console.log("-->One more time to leave");
                 //console.log(question);
@@ -59,7 +71,7 @@ export const quest = (question, count = 1) => {
     });
 };
 
-export const questSafe = async(question, count = 0) => {
+export const questSafe = async (question, count = 0) => {
     let resTemp = "";
     resTemp = await quest(question, count).catch(() => {});
     return typeof resTemp !== "undefined" ? resTemp : "0";
@@ -74,7 +86,7 @@ export const formatQuestion = (ques, arrayAns) => {
     return `${final}\n`;
 };
 
-export const getArticles = async(client) => {
+export const getArticles = async (client) => {
     let username = client.getUser().username;
     if (typeof username === "undefined") {
         username = await questSafe("Enter the name :");
@@ -94,17 +106,11 @@ export const getArticles = async(client) => {
     }
 };
 
-export const sendArticles = async(client) => {
-    const typeOfArticle = await questSafe(
-        formatQuestion("What do you want to do ?", ["file", "create new now"])
-    );
+export const sendArticles = async (client) => {
+    const typeOfArticle = await questSafe(formatQuestion("What do you want to do ?", ["file", "create new now"]));
     if (typeOfArticle === "1") {
         let pat;
-        while (
-            (pat = await questSafe("Type the path\n")) == "0" ?
-            false :
-            !fs.existsSync(pat)
-        ) {
+        while ((pat = await questSafe("Type the path\n")) == "0" ? false : !fs.existsSync(pat)) {
             console.log("file not found :(");
         }
         if (fs.existsSync(pat)) {
@@ -131,7 +137,7 @@ export const sendArticles = async(client) => {
     }
 };
 
-const createArticle = async() => {
+const createArticle = async () => {
     const title = await questSafe("Title : ");
     const content = await questSafe("Content : ");
     const description = await questSafe("description : ");
